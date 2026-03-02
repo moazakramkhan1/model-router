@@ -13,21 +13,21 @@
 models:
   local_small:
     provider: ollama
-    base_url: "${OLLAMA_BASE_URL:-http://ollama:11434}"
-    model: "${OLLAMA_MODEL:-hf.co/unsloth/Qwen3-1.7B-GGUF:Q4_K_M}"
+    base_url: "${LOCAL_BASE_URL:-http://ollama:11434}"
+    model: "${LOCAL_MODEL:-hf.co/unsloth/Qwen3-1.7B-GGUF:Q4_K_M}"
     api_key_env: null
     virtual_cost_per_1k: 0
 
   fast_mid:
     provider: groq
     base_url: "https://api.groq.com/openai/v1"
-    model: "${GROQ_MODEL:-llama-3.1-8b-instant}"
-    api_key_env: "GROQ_API_KEY"
+    model: "${MID_MODEL:-llama-3.1-8b-instant}"
+    api_key_env: "MID_API_KEY"
     virtual_cost_per_1k: 5
 
   premium:
     provider: gemini
     base_url: null
-    model: "${GEMINI_MODEL:-gemini-1.5-flash}"
-    api_key_env: "GEMINI_API_KEY"
+    model: "${PREMIUM_MODEL:-gemini-1.5-flash}"
+    api_key_env: "PREMIUM_API_KEY"
     virtual_cost_per_1k: 10

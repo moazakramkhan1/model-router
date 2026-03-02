@@ -9,7 +9,7 @@ services:
     env_file:
       - .env
     environment:
-      OLLAMA_BASE_URL: http://ollama:11434
+      LOCAL_BASE_URL: http://ollama:11434
     volumes:
       - ./config:/app/config:ro
     depends_on:
@@ -32,8 +32,8 @@ services:
       - ollama
     environment:
       OLLAMA_HOST: http://ollama:11434
-      OLLAMA_MODEL: ${OLLAMA_MODEL:-hf.co/unsloth/Qwen3-1.7B-GGUF:Q4_K_M}
-    entrypoint: ["sh", "-c", "sleep 8 && ollama pull $$OLLAMA_MODEL"]
+      LOCAL_MODEL: ${LOCAL_MODEL:-hf.co/unsloth/Qwen3-1.7B-GGUF:Q4_K_M}
+    entrypoint: ["sh", "-c", "sleep 8 && ollama pull $$LOCAL_MODEL"]
     restart: "no"
 
   prometheus:
