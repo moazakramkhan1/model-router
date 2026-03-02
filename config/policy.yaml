@@ -1,0 +1,19 @@
+# Routing policy configuration.
+#
+# low_risk_path  : ordered list of model slots tried for low-risk tasks.
+# high_risk_path : ordered list of model slots tried for high-risk tasks.
+# max_attempts   : hard cap on number of attempts (regardless of path length).
+# budget_virtual_units_default: used when the caller does not supply a budget.
+
+policy:
+  low_risk_path:
+    - local_small
+    - fast_mid
+    - premium
+
+  high_risk_path:
+    - fast_mid
+    - premium
+
+  max_attempts: 3
+  budget_virtual_units_default: 50

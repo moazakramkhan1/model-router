@@ -1,0 +1,33 @@
+# Model slot registry.
+# Each entry defines a named "slot" that the router can use.
+# Env-var syntax: ${VAR:-default}  or  ${VAR}
+#
+# Fields:
+#   provider           : ollama | groq | gemini
+#   base_url           : HTTP base URL (used by ollama / groq)
+#   model              : model name / tag forwarded to the provider
+#   api_key_env        : name of the env var that holds the API key (null = no key)
+#   virtual_cost_per_1k: virtual cost units per 1 000 output tokens
+#                        (0 = free, e.g. local model)
+
+models:
+  local_small:
+    provider: ollama
+    base_url: "${OLLAMA_BASE_URL:-http://ollama:11434}"
+    model: "${OLLAMA_MODEL:-hf.co/unsloth/Qwen3-1.7B-GGUF:Q4_K_M}"
+    api_key_env: null
+    virtual_cost_per_1k: 0
+
+  fast_mid:
+    provider: groq
+    base_url: "https://api.groq.com/openai/v1"
+    model: "${GROQ_MODEL:-llama-3.1-8b-instant}"
+    api_key_env: "GROQ_API_KEY"
+    virtual_cost_per_1k: 5
+
+  premium:
+    provider: gemini
+    base_url: null
+    model: "${GEMINI_MODEL:-gemini-1.5-flash}"
+    api_key_env: "GEMINI_API_KEY"
+    virtual_cost_per_1k: 10

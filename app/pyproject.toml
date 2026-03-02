@@ -1,0 +1,16 @@
+[project]
+name = "model-router"
+version = "1.0.0"
+description = "Provider-agnostic LLM router with cost optimisation and Prometheus/Grafana observability"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi==0.111.1",
+    "uvicorn[standard]==0.30.1",
+    "pydantic==2.7.4",
+    "requests==2.32.3",
+    "PyYAML==6.0.1",
+    "prometheus-client==0.20.0",
+    "google-genai==0.8.0",
+    "httpx==0.27.0",
+]
