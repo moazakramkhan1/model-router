@@ -12,8 +12,8 @@ WORKDIR /app
 RUN mkdir -p /tmp/prometheus_multiproc
 
 # Install Python deps first (better layer caching)
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY pyproject.toml .
+RUN pip install --no-cache-dir .
 
 # Copy application source
 COPY . .

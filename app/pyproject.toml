@@ -13,6 +13,7 @@ dependencies = [
     "prometheus-client==0.20.0",
     "google-genai==0.8.0",
     "slowapi==0.1.9",
+    "tenacity==8.3.0",
     "structlog==24.2.0",
     "opentelemetry-sdk==1.24.0",
     "opentelemetry-instrumentation-fastapi==0.45b0",
