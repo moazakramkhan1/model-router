@@ -1,15 +1,25 @@
 """
-eval/judge.py – orchestrates all evaluation steps for a single model response.
+eval/judge.py – orchestrates rules-based + optional tiny LLM judge.
 
-Currently only the rules-based judge is implemented (cost: free).
-A future LLM-judge can be wired in here without changing the router.
+When USE_LLM_JUDGE=true (default), the rules judge runs first for a fast
+score, then the tiny local LLM scores the response. If the LLM is
+unavailable the rules score is used as the final verdict.
+
+Set USE_LLM_JUDGE=false to skip the LLM judge entirely (e.g. in tests).
 """
+import os
 from typing import Any, Dict
 
 from .rules import evaluate as rules_evaluate
 
+_USE_LLM_JUDGE: bool = os.environ.get("USE_LLM_JUDGE", "true").lower() == "true"
 
-def judge(text: str, require_json: bool = False) -> Dict[str, Any]:
+
+async def judge(
+    text: str,
+    require_json: bool = False,
+    user_input: str = "",
+) -> Dict[str, Any]:
     """
     Evaluate a model response and return a consolidated verdict.
 
@@ -17,6 +27,7 @@ def judge(text: str, require_json: bool = False) -> Dict[str, Any]:
     ----------
     text         : raw string returned by the provider
     require_json : when True, the text must be parseable JSON
+    user_input   : original prompt (used by the LLM judge for context)
 
     Returns
     -------
@@ -26,9 +37,27 @@ def judge(text: str, require_json: bool = False) -> Dict[str, Any]:
         reasons : List[str]
     }
     """
-    result = rules_evaluate(text, require_json=require_json)
+    rules_result = rules_evaluate(text, require_json=require_json)
+
+    # Short-circuit: if rules already fail hard (empty / error markers) and
+    # LLM judge is disabled, return immediately.
+    if not _USE_LLM_JUDGE or not text.strip():
+        return {
+            "ok": rules_result["ok"],
+            "score": rules_result["score"],
+            "reasons": rules_result["reasons"],
+        }
+
+    # LLM judge – uses same local model server, falls back gracefully
+    from .llm_judge import llm_judge  # lazy import to avoid circular deps
+
+    llm_result = await llm_judge(
+        user_input=user_input,
+        response_text=text,
+        rules_score=rules_result["score"],
+    )
     return {
-        "ok": result["ok"],
-        "score": result["score"],
-        "reasons": result["reasons"],
+        "ok": llm_result["ok"],
+        "score": llm_result["score"],
+        "reasons": llm_result["reasons"],
     }

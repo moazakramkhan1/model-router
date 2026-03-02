@@ -1,0 +1,58 @@
+groups:
+  - name: router_alerts
+    rules:
+
+      # ── Success rate ───────────────────────────────────────────────────────
+      - alert: RouterHighFailureRate
+        expr: >
+          (
+            sum(rate(router_tasks_total{success="false"}[5m]))
+            /
+            sum(rate(router_tasks_total[5m]))
+          ) > 0.3
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Router failure rate above 30 %"
+          description: >
+            More than 30 % of routing tasks are failing over the last 5 minutes.
+            Current value: {{ $value | humanizePercentage }}.
+
+      - alert: RouterAllTasksFailing
+        expr: >
+          sum(rate(router_tasks_total{success="true"}[5m])) == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "No successful router tasks in the last 5 minutes"
+          description: "All routing attempts are failing. Check provider connectivity."
+
+      # ── Latency ───────────────────────────────────────────────────────────
+      - alert: RouterHighP95Latency
+        expr: >
+          histogram_quantile(0.95,
+            sum by (le, model)(rate(router_latency_ms_bucket[5m]))
+          ) > 8000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "p95 latency > 8 s for model {{ $labels.model }}"
+          description: >
+            The 95th-percentile latency for {{ $labels.model }} has exceeded
+            8 000 ms for 5 consecutive minutes.
+
+      # ── Cost spike ────────────────────────────────────────────────────────
+      - alert: RouterCostSpike
+        expr: >
+          sum(rate(router_virtual_cost_units_total[5m])) > 50
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Virtual cost units accumulating at high rate"
+          description: >
+            More than 50 virtual cost units per second are being consumed.
+            Current rate: {{ $value }}/s.

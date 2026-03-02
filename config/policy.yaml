@@ -4,6 +4,7 @@
 # high_risk_path : ordered list of model slots tried for high-risk tasks.
 # max_attempts   : hard cap on number of attempts (regardless of path length).
 # budget_virtual_units_default: used when the caller does not supply a budget.
+# min_score      : minimum judge score (0.0–1.0) to consider an attempt ok.
 
 policy:
   low_risk_path:
@@ -17,3 +18,4 @@ policy:
 
   max_attempts: 3
   budget_virtual_units_default: 50
+  min_score: 0.5

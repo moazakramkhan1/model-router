@@ -1,5 +1,5 @@
 """
-providers/base.py – abstract contract every provider adapter must implement.
+providers/base.py – abstract async contract every provider adapter must implement.
 """
 from abc import ABC, abstractmethod
 from typing import Any, Dict
@@ -22,9 +22,9 @@ class BaseProvider(ABC):
         self.config = config
 
     @abstractmethod
-    def generate(self, user_input: str, max_tokens: int) -> Dict[str, Any]:
+    async def generate(self, user_input: str, max_tokens: int) -> Dict[str, Any]:
         """
-        Call the underlying model and return a result dict.
+        Call the underlying model asynchronously and return a result dict.
 
         Returns
         -------
